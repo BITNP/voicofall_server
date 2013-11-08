@@ -1,0 +1,81 @@
+﻿.divbox {
+    padding-top: 10px;
+}
+
+.top10 {
+    padding-top: 10px;
+}
+
+.top20 {
+    padding-top: 20px;
+}
+
+.pbottom20 {
+    padding-bottom: 20px;
+}
+
+.right10 {
+    padding-right: 10px;
+}
+
+.right20 {
+    padding-right: 20px;
+}
+
+.mbottom20 {
+    margin-bottom: 20px;
+}
+
+.mtop10 {
+    margin-top: 10px;
+}
+
+.btnbox {
+    margin-right: 5px;
+    width:120px;
+}
+
+.tbgreen {
+    border: 2px solid #2ecc71;
+color: #000000;
+font-size: 15px;
+padding: 8px 0 9px 10px;
+line-height:normal;
+-webkit-border-radius: 6px;
+-moz-border-radius: 6px;
+border-radius: 6px;
+-webkit-box-shadow: none;
+-moz-box-shadow: none;
+box-shadow: none;
+width: 206px;
+vertical-align:middle;
+}
+
+.green {
+    color:#27AE60;
+}
+
+.purple {
+    color:#9B59B6;
+}
+
+.blue {
+    color:#3498DB;
+}
+
+.bold {
+    font-weight:bold;
+}
+
+.big {
+    font-size:large;
+    vertical-align:middle;
+}
+
+.red {
+    color:#E74C3C;
+}
+
+.greenBorder {
+    border: 5px solid #2ecc71;
+}

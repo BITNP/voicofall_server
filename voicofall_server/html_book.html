@@ -1,0 +1,307 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>深秋歌会：在线订票</title>
+
+<script type="text/javascript">
+    var xmlhttp = new XMLHttpRequest(); //AJAX的对象
+    var rpsstring;//responseString，请求服务器返回的字符串
+    var uid;
+
+    //订票按钮
+    function submit_onlick()
+    {
+        var url =   //请求服务器页面的url
+            "ResponsePages/reto_book.ashx?" + 
+            "username=" + $("username").value + "&" +   //姓名
+            "studentid=" + $("studentid").value + "&" + //学号
+            "phonenumber=" + $("phonenumber").value;    //电话
+        
+        xmlhttp.open("get",encodeURI(url), true);       //使用get，设置是否异步操作为true
+        xmlhttp.send(null);                             //向服务器传递
+        xmlhttp.onreadystatechange = bookProc;          //状态若改变，则调用bookProc函数
+    }
+
+    //状态改变时调用
+    function bookProc()
+    {
+        //状态为4（交易成功，即请求成功，返回数据成功）运行
+        if (xmlhttp.readyState == 4)
+        {
+            rpsstring = xmlhttp.response;   //将返回的数据保存在rpsstring中
+            parseString();                  //用自定义的函数来解析rpsstring
+        }
+    }
+
+    //用来解析rpsstring的函数
+    function parseString()
+    {
+        if (rpsstring[6] == 'y')    //如果传递过来的是state=yes&id=************，*为数字
+        {
+            var re = new RegExp(/\d{12}/);
+            uid = rpsstring.match(re);
+            $("response").innerHTML += "预订成功!</br>";
+            $("response").innerHTML += "您的信息为</br>";
+            $("response").innerHTML += "门票ID:" + uid + "</br>";
+            $("response").innerHTML += "姓名:" + $("username").value + "</br>";
+            $("response").innerHTML += "学号:" + $("studentid").value + "</br>";
+            $("response").innerHTML += "手机号" + $("phonenumber").value;
+        }
+        else    //传递过来的是state=no&wrongcode=*，*为数字
+        {
+            var re = new RegExp(/\d{1}/);   //创建正则表达式，用来匹配一个数字
+            var id = rpsstring.match(re);   //匹配rpsstring
+            //判断wrongcode的值，在<p id="response"></p>中输出信息
+            if (id == "1")
+                $("response").innerHTML = "请勿重复订票！";
+            else if (id == "2")
+                $("response").innerHTML = "预订失败！请重试！";
+            else if (id == "3")
+                $("response").innerHTML = "链接数据库出错！";
+            else if (id == "4")
+                $("response").innerHTML = "预订失败。</br>票已订完！您的手速不给力啊……";
+
+        }
+    }
+
+    function query_onlick()
+    {
+        var url =   //请求服务器页面的url
+           "ResponsePages/reto_query.ashx?" +
+           "username=" + $("username").value + "&" +   //姓名
+           "studentid=" + $("studentid").value + "&" + //学号
+           "phonenumber=" + $("phonenumber").value;    //电话
+
+        xmlhttp.open("get", encodeURI(url), true);       //使用get，设置是否异步操作为true
+        xmlhttp.send(null);                             //向服务器传递
+        xmlhttp.onreadystatechange = queryProc;          //状态若改变，则调用bookProc函数
+    }
+
+    //状态改变时调用
+    function queryProc()
+    {
+        //状态为4（交易成功，即请求成功，返回数据成功）运行
+        if (xmlhttp.readyState == 4)
+        {
+            rpsstring = xmlhttp.response;   //将返回的数据保存在rpsstring中
+            var reg = new RegExp(/\d+/);
+            if (rpsstring.match(reg) == "0")
+                $("response").innerHTML = "没有您的订票记录！</br>请检查信息是否输入有误。";
+            else
+            {
+                $("response").innerHTML = "您的门票ID为 : " + rpsstring.match(reg);
+                uid = rpsstring.match(reg);
+            }
+        }
+    }
+
+    //退票
+    function rebook_onlick()
+    {
+        var url =   //请求服务器页面的url
+          "ResponsePages/reto_rebook.ashx?" +
+          "uid=" + uid;
+        xmlhttp.open("get", encodeURI(url), true);       //使用get，设置是否异步操作为true
+        xmlhttp.send(null);                             //向服务器传递
+        xmlhttp.onreadystatechange = rebookProc;          //状态若改变，则调用bookProc函数
+    }
+
+    //状态改变时调用
+    function rebookProc() {
+        //状态为4（交易成功，即请求成功，返回数据成功）运行
+        if (xmlhttp.readyState == 4) {
+            rpsstring = xmlhttp.response;   //将返回的数据保存在rpsstring中
+            if (rpsstring == "1")
+                $("response").innerHTML = "退订成功";
+        }
+    }
+
+    //&(id)效果等同于document.getElementById(id)
+    function $(id)
+    {
+        var elements = new Array();   
+        for (var i = 0; i < arguments.length; i++)   
+        {   
+            var element = arguments[i];   
+            if (typeof element == 'string')   
+                element = document.getElementById(element);   
+            if (arguments.length == 1)   
+                return element;   
+            elements.push(element);   
+        }   
+        return elements;  
+    }
+
+    //时间的变量声明  
+    //服务器时间
+    var year;
+    var month;
+    var day;
+    var hour;
+    var min;
+    var second;
+    //开始预订票的时间
+    var bookyear;
+    var bookmonth;
+    var bookday;
+    var bookhour;
+    var bookmin;
+    var booksecond;
+    //时间差
+    var dyear;
+    var dmonth;
+    var dday;
+    var dhour;
+    var dmin;
+    var dsecond;
+    var dt;//相差秒数
+    //从服务器获得时间，包括服务器时间和订票时间
+    function GetTimeFromServer()
+    {
+        xmlhttp.open("get", "ResponsePages/ResponseServerTime.ashx", true);
+        xmlhttp.send();
+        xmlhttp.onreadystatechange = timeProc;  //当状态改变时调用自定义的函数timePro()
+    }
+
+    function timeProc()
+    {
+        if (xmlhttp.readyState == 4)
+        {
+            rpsstring = xmlhttp.response;
+            parseTime();    //用自定义函数parseTime()来解析字符串
+            UpdateTime();   //更新时间
+            GetTicketsInfoFromServer();
+        }   
+    }
+
+    var unbooked;
+    //从服务器获得剩余票数
+    function GetTicketsInfoFromServer() {
+        xmlhttp.open("get", "ResponsePages/ResponseTicketsInfo.ashx", true);
+        xmlhttp.send();
+        xmlhttp.onreadystatechange = ticketProc;  //当状态改变时调用自定义的函数timePro()
+    }
+
+    function ticketProc() {
+        if (xmlhttp.readyState == 4) {
+            $("unbooked").innerHTML = "剩余票数:" + xmlhttp.response;
+        }
+    }
+
+    //解析时间函数
+    function parseTime()
+    {
+        var reg = new RegExp(/state=no&wrongcode=3/);   //创建正则表达式，判断是否等于state=no&wrongcode=3
+        if (reg.test(rpsstring))    //是的话则输出错误信息
+        {
+            $("response").innerHTML = "链接数据库出错！";
+            bookhour = 100; //并且将预订时间设为100防止提交按钮生效
+            return;
+        }
+        var arr = rpsstring.split("&"); //将字符串rpsstring用split方法以&符号分开成一个数组
+        //从这个数组读取时间
+        year = Number(arr[0]);
+        month = Number(arr[1]);
+        day = Number(arr[2]);
+        hour = Number(arr[3]);
+        min = Number(arr[4]);
+        second = Number(arr[5]);
+        bookyear = Number(arr[6]);
+        bookmonth = Number(arr[7]);
+        bookday = Number(arr[8]);
+        bookhour = Number(arr[9]);
+        bookmin = Number(arr[10]);
+        booksecond = Number(arr[11]);
+        //将时间显示在<span id="bookTime"></span>中
+        $("bookTime").innerHTML = bookyear + "年" + bookmonth + "月" + bookday + "日 " + (bookhour < 10 ? "0" : "") + bookhour + ":" + (bookmin < 10 ? "0" : "") + bookmin;
+    }
+
+    var bookAllow = false;  //是否允许提交
+    //更新时间函数
+    function UpdateTime()
+    {
+        second++;//秒数+1
+        //处理时间上的进位
+        if (second >= 60)
+        {
+            min++
+            second = 0;
+            if (min >= 60)
+            {
+                min = 0;
+                hour++;
+                if (hour >= 24)
+                {
+                    hour = 0;
+                }
+            }
+        }
+        if (!bookAllow) //防止已经可以预订还去比较时间
+        {
+
+            if (CompareToBookTime())    //用自定义函数CompareToBookTime()函数，比较当前时间和预订时间，如果没到则返回false,否则为true
+            {
+                bookAllow = true;
+                $("bookButton").disabled = "";  //如果时间到了则允许使用按钮
+            }
+        }
+        $("servertime").innerHTML = "当前时间: " + year + "年" + month + "月" + day + "日 " + (hour < 10 ? "0" : "") + hour + ":" + (min < 10 ? "0" : "") + min + ":" + (second < 10 ? "0" : "") + second;
+        window.setTimeout("UpdateTime()", 1000);
+    }
+
+    //比较当前时间和预订时间
+    function CompareToBookTime()
+    {
+        dyear = bookyear - year;
+        dmonth = bookmonth - month;
+        dday = bookday - day;
+        dhour = bookhour - hour;
+        dmin = bookmin - min;
+        dsecond = booksecond - second;
+        dt = dyear * 31536000 + dmonth * 31 * 86400 + dday * 86400 + dhour * 3600 + dmin * 60 + dsecond;
+        if (dt <= 0)
+            return true;
+        else
+            return false;
+    }
+
+    function onLoad()
+    {
+        GetTimeFromServer();
+        //GetTicketsInfoFromServer();
+    }
+</script>
+</head>
+<body onload="onLoad()">
+    <div>
+        <div>
+            <span>订票时间:</span>
+            <span id="bookTime">
+            </span>
+        </div>
+        <div id="servertime">
+        </div>
+        <div id="unbooked">
+        </div>
+        <div>
+            <span>姓名</span><input id="username" type="text" name="username" />
+        </div>
+        <div>
+            <span>学号</span><input id="studentid" type="text" name="studentid" />
+        </div>
+        <div>
+            <span>手机</span><input id="phonenumber" type="text" name="phonenumber" />
+        </div>
+        <div>
+            <span><button id="bookButton" disabled="disabled" onclick="submit_onlick()">预订</button></span>
+            <span><button id="queryButton" onclick="query_onlick()">查询</button></span>
+            <span><button id="rebookButton" onclick="rebook_onlick()">退票</button></span>
+        </div>
+        <div>
+            <p id="response">
+            </p>
+        </div>
+    </div>
+</body>
+</html>
