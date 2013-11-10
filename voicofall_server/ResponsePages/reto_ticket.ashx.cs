@@ -35,7 +35,7 @@ namespace voicofall_server.ResponsePages
         string username;
         string studentid;
         string phonenumber;
-        string zone;
+        string zonename;
         string shenqiuName;
         string shenqiutime;
 
@@ -54,7 +54,7 @@ namespace voicofall_server.ResponsePages
             this.uid = context.Request.Params["uid"];
 
             LoadTicketInfo(uid, context);
-            codeString = String.Format("{0}&{1}&{2}&{3}&{4}&{5}&{6}",uid,username,studentid,phonenumber,zone,shenqiutime,shenqiuName);
+            codeString = String.Format("{0}&{1}&{2}&{3}&{4}&{5}&{6}",uid,username,studentid,phonenumber,zonename,shenqiutime,shenqiuName);
             IDictionary<EncodeHintType, object> hints = new Dictionary<EncodeHintType,object>();
             hints.Add(EncodeHintType.CHARACTER_SET,"UTF-8");
             MemoryStream ms = new MemoryStream();
@@ -80,12 +80,12 @@ namespace voicofall_server.ResponsePages
             }
             gs = Graphics.FromImage(bmap);
             SizeF shenqiuNameSize = gs.MeasureString(shenqiuName, new Font("隶书", 24));
-            SizeF zoneSize = gs.MeasureString(zone, new Font("隶书", 24));
+            SizeF zoneSize = gs.MeasureString(zonename, new Font("隶书", 24));
             SizeF uidSize = gs.MeasureString(uid, new Font("隶书", 16));
             DrawText(bmap, "深秋歌会", 45, 10, 32);
             DrawText(bmap, shenqiuName, codeWidth - (int)shenqiuNameSize.Width, 18, 24);
             DrawText(bmap, "ID:"+uid, 45, codeHeight + (int)uidSize.Height + 22, 16);
-            DrawText(bmap, zone, codeWidth - (int)zoneSize.Width, codeHeight + (int)zoneSize.Height, 24);
+            DrawText(bmap, zonename, codeWidth - (int)zoneSize.Width, codeHeight + (int)zoneSize.Height, 24);
             return bmap;
         }
 
@@ -130,7 +130,7 @@ namespace voicofall_server.ResponsePages
                 username = ticketRow["username"] as string;
                 studentid = ticketRow["studentid"] as string;
                 phonenumber = ticketRow["phonenumber"] as string;
-                zone = ticketRow["zone"] as string;
+                zonename = ticketRow["zonename"] as string;
                 shenqiutime = (ticketsStateTable.Rows.Find("shenqiuStartTime"))["scontent"] as string;
                 shenqiuName = (ticketsStateTable.Rows.Find("shenqiuName"))["scontent"] as string;
             }

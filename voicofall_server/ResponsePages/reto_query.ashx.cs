@@ -28,11 +28,12 @@ namespace voicofall_server.ResponsePages
             string phonenumber = context.Request.Params["phonenumber"];
             string shenqiuStartTime;
             string shenqiuName;
-            string zone;
+            string zonename;
             InitDB(context);
             DataTable ticketsTable = dataSet1.Tables["ticketsTable"];
             DataTable ticketsStateTable = dataSet2.Tables["ticketsStateTable"];
-            zone = (ticketsStateTable.Rows.Find("nextBookZone"))["scontent"] as string;
+            ticketsStateTable.PrimaryKey = new DataColumn[] { ticketsStateTable.Columns["state"] };
+            zonename = (ticketsStateTable.Rows.Find("nextBookZone"))["scontent"] as string;
             shenqiuStartTime = (ticketsStateTable.Rows.Find("shenqiuStartTime"))["scontent"] as string;
             shenqiuName = (ticketsStateTable.Rows.Find("shenqiuName"))["scontent"] as string;
             foreach (DataRow row in ticketsTable.Rows)
@@ -41,7 +42,7 @@ namespace voicofall_server.ResponsePages
                     (string)(row["studentid"]) == studentid &&
                     (string)(row["phonenumber"]) == phonenumber)
                 {
-                    context.Response.Write(String.Format("uid={0}&zone={1}&shenqiuStartTime={2}&shenqiuName={3}", row["UID"], zone, shenqiuStartTime, shenqiuName));
+                    context.Response.Write(String.Format("uid={0}&zonename={1}&shenqiuStartTime={2}&shenqiuName={3}", row["UID"], zonename, shenqiuStartTime, shenqiuName));
                     return;
                 }
             }

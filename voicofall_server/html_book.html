@@ -8,12 +8,13 @@
     var xmlhttp = new XMLHttpRequest(); //AJAX的对象
     var rpsstring;//responseString，请求服务器返回的字符串
     var uid;
+    var serverurl = "";//"http://10.193.35.162/";
 
     //订票按钮
     function submit_onlick()
     {
         var url =   //请求服务器页面的url
-            "ResponsePages/reto_book.ashx?" + 
+            serverurl+"ResponsePages/reto_book.ashx?" + 
             "username=" + $("username").value + "&" +   //姓名
             "studentid=" + $("studentid").value + "&" + //学号
             "phonenumber=" + $("phonenumber").value;    //电话
@@ -51,15 +52,15 @@
         else    //传递过来的是state=no&wrongcode=*，*为数字
         {
             var re = new RegExp(/\d{1}/);   //创建正则表达式，用来匹配一个数字
-            var id = rpsstring.match(re);   //匹配rpsstring
+            uid = rpsstring.match(re);   //匹配rpsstring
             //判断wrongcode的值，在<p id="response"></p>中输出信息
-            if (id == "1")
+            if (uid == "1")
                 $("response").innerHTML = "请勿重复订票！";
-            else if (id == "2")
+            else if (uid == "2")
                 $("response").innerHTML = "预订失败！请重试！";
-            else if (id == "3")
+            else if (uid == "3")
                 $("response").innerHTML = "链接数据库出错！";
-            else if (id == "4")
+            else if (uid == "4")
                 $("response").innerHTML = "预订失败。</br>票已订完！您的手速不给力啊……";
 
         }
@@ -67,7 +68,7 @@
 
     function query_onlick()
     {
-        var url =   //请求服务器页面的url
+        var url = serverurl +  //请求服务器页面的url
            "ResponsePages/reto_query.ashx?" +
            "username=" + $("username").value + "&" +   //姓名
            "studentid=" + $("studentid").value + "&" + //学号
@@ -85,7 +86,7 @@
         if (xmlhttp.readyState == 4)
         {
             rpsstring = xmlhttp.response;   //将返回的数据保存在rpsstring中
-            var reg = new RegExp(/\d+/);
+            var reg = new RegExp(/\d{12}/);
             if (rpsstring.match(reg) == "0")
                 $("response").innerHTML = "没有您的订票记录！</br>请检查信息是否输入有误。";
             else
@@ -99,7 +100,7 @@
     //退票
     function rebook_onlick()
     {
-        var url =   //请求服务器页面的url
+        var url = serverurl + //请求服务器页面的url
           "ResponsePages/reto_rebook.ashx?" +
           "uid=" + uid;
         xmlhttp.open("get", encodeURI(url), true);       //使用get，设置是否异步操作为true
@@ -159,7 +160,7 @@
     //从服务器获得时间，包括服务器时间和订票时间
     function GetTimeFromServer()
     {
-        xmlhttp.open("get", "ResponsePages/ResponseServerTime.ashx", true);
+        xmlhttp.open("get", serverurl + "ResponsePages/ResponseServerTime.ashx", true);
         xmlhttp.send();
         xmlhttp.onreadystatechange = timeProc;  //当状态改变时调用自定义的函数timePro()
     }
@@ -178,7 +179,7 @@
     var unbooked;
     //从服务器获得剩余票数
     function GetTicketsInfoFromServer() {
-        xmlhttp.open("get", "ResponsePages/ResponseTicketsInfo.ashx", true);
+        xmlhttp.open("get", serverurl + "ResponsePages/ResponseTicketsInfo.ashx", true);
         xmlhttp.send();
         xmlhttp.onreadystatechange = ticketProc;  //当状态改变时调用自定义的函数timePro()
     }
@@ -266,11 +267,21 @@
             return false;
     }
 
+    function myticket_onlick()
+    {
+        var re = new RegExp(/\d{12}/);
+        var uids = "";
+        //if (uid != null)
+        window.location.href = serverurl + "ResponsePages/MyTicket.aspx?uid=" + uid;
+            //self.location(serverurl + "ResponsePages/MyTicket.aspx?uid=" + uid);
+    }
+
     function onLoad()
     {
         GetTimeFromServer();
         //GetTicketsInfoFromServer();
     }
+
 </script>
 </head>
 <body onload="onLoad()">
@@ -297,6 +308,7 @@
             <span><button id="bookButton" disabled="disabled" onclick="submit_onlick()">预订</button></span>
             <span><button id="queryButton" onclick="query_onlick()">查询</button></span>
             <span><button id="rebookButton" onclick="rebook_onlick()">退票</button></span>
+            <span><button id="myticketButton" onclick="myticket_onlick()">我的门票</button></span>
         </div>
         <div>
             <p id="response">
@@ -304,4 +316,6 @@
         </div>
     </div>
 </body>
+
+
 </html>

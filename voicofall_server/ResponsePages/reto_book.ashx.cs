@@ -33,7 +33,7 @@ namespace voicofall_server.ResponsePages
             string ticketid;
             string shenqiuStartTime;
             string shenqiuName;
-            string zone;
+            string zonename;
             int unbooked;
             string temp = ((DateTime.Now.Year % 100) < 10 ? "0" : "") + (DateTime.Now.Year % 100).ToString() + studentid.Substring(6) + phonenumber.Substring(9);
             int rdnum = rd.Next(100);
@@ -50,6 +50,7 @@ namespace voicofall_server.ResponsePages
             InitDB(context);
             DataTable ticketsTable = dataSet1.Tables["ticketsTable"];
             DataTable ticketsStateTable = dataSet2.Tables["ticketsStateTable"];
+
             
            
 
@@ -86,8 +87,8 @@ namespace voicofall_server.ResponsePages
             //添加新行
             DataRow newRow = ticketsTable.NewRow();
             newRow["UID"] = ticketid;
-            newRow["zone"] = (ticketsStateTable.Rows.Find("nextBookZone"))["scontent"];
-            zone = newRow["zone"] as string;
+            newRow["zonename"] = (ticketsStateTable.Rows.Find("nextBookzone"))["scontent"] as string;
+            zonename = newRow["zonename"] as string;
             newRow["username"] = username;
             newRow["studentid"] = studentid;
             newRow["phonenumber"] = phonenumber;
@@ -104,16 +105,19 @@ namespace voicofall_server.ResponsePages
             {
                 Adapter1.Update(ticketsTable);
                 Adapter2.Update(ticketsStateTable);
+                
+                
                 conn.Close();
             }
             catch (Exception ee)
             {
+                //context.Response.Write(ee.ToString());
                 context.Response.Write("state=no&wrongcode=2");  //预订失败！请重试！
                 return;
             }
             
 
-            context.Response.Write(String.Format("state=yes&uid={0}&zone={1}&shenqiuStartTime={2}&shenqiuName={3}&unbooked={4}",ticketid,zone,shenqiuStartTime,shenqiuName,unbooked));
+            context.Response.Write(String.Format("state=yes&uid={0}&zonename={1}&shenqiuName={2}",ticketid,zonename,shenqiuName));
         }
 
         public void InitDB(HttpContext context)
@@ -135,6 +139,7 @@ namespace voicofall_server.ResponsePages
                 OleDbCommandBuilder sqlBulider2 = new OleDbCommandBuilder(Adapter2);
                 dataSet2 = new DataSet();
                 Adapter2.Fill(dataSet2, "ticketsStateTable");
+
 
             }
             catch (Exception ee)
