@@ -71,7 +71,7 @@ namespace voicofall_server
         {
             if ((string)Session["authority"] == "admin")
                 return;
-            DataRow row = adminsTable.Rows[e.RowIndex];
+            DataRow row = adminsTable.Rows.Find(e.Keys["账号"]);
             if ((string)row["权限"] == "super")
             {
                 e.Cancel = true;
@@ -84,7 +84,6 @@ namespace voicofall_server
         {
             if ((string)Session["authority"] == "admin")
                 return;
-            DataRow row = adminsTable.Rows[e.RowIndex];
             if ((string)e.NewValues["权限"] == "super")
             {
                 e.Cancel = true;

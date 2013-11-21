@@ -53,8 +53,8 @@ namespace voicofall_server
                     Session["isLogin"] = "true";
                 }
                 //显示名单
-                this.TicketsGridView.DataSource = dataSet1;
-                this.TicketsGridView.DataBind();
+                //this.TicketsGridView.DataSource = dataSet1;
+                //this.TicketsGridView.DataBind();
 
                 //显示票务信息
                 this.allLable.Text = ((int)ticketsStateTable.Rows.Find("all")["content"]).ToString();
@@ -62,6 +62,7 @@ namespace voicofall_server
                 this.unbookedLable.Text = ((int)ticketsStateTable.Rows.Find("unbooked")["content"]).ToString();
                 this.zoneLabel.Text = ticketsStateTable.Rows.Find("nextBookZone")["scontent"] as string;
                 this.shenqiuNameLabel.Text = ticketsStateTable.Rows.Find("shenqiuName")["scontent"] as string;
+                this.tagCountLabel.Text = ((int)ticketsStateTable.Rows.Find("tagCount")["content"]).ToString();
                 //显示时间
                 ShowTime();
             }
@@ -192,23 +193,23 @@ namespace voicofall_server
             LogToHistroy("删除记录 " + (ticketsTable.Rows[e.RowIndex])["username"] + " ; " +
                 (ticketsTable.Rows[e.RowIndex])["studentid"] + " ; " +
                 (ticketsTable.Rows[e.RowIndex])["phonenumber"], DateTime.Now);
-            //删除ticketsTable中选中的那一行
-            ticketsTable.Rows[e.RowIndex].Delete();
-            //修改ticketsStateTable中的信息
+            ////删除ticketsTable中选中的那一行
+            //ticketsTable.Rows[e.RowIndex].Delete();
+            ////修改ticketsStateTable中的信息
             ticketsStateTable.Rows.Find("booked")["content"] = (int)ticketsStateTable.Rows.Find("booked")["content"] - 1;
             ticketsStateTable.Rows.Find("unbooked")["content"] = (int)ticketsStateTable.Rows.Find("unbooked")["content"] + 1;
             try
             {
-                adapter1.Update(ticketsTable);
+                //adapter1.Update(ticketsTable);
                 adapter2.Update(ticketsStateTable);
                 //更新票务名单
-                this.TicketsGridView.DataBind();
+                //this.TicketsGridView.DataBind();
                 //更新票务lable信息
                 this.bookedLable.Text = ((int)ticketsStateTable.Rows.Find("booked")["content"]).ToString();
                 this.unbookedLable.Text = ((int)ticketsStateTable.Rows.Find("unbooked")["content"]).ToString();
-                
+
                 this.TicketsGridView.Columns[0].Visible = true;
-                
+
             }
             catch (Exception ee)
             {
@@ -294,6 +295,23 @@ namespace voicofall_server
         protected void clearButton_Click(object sender, EventArgs e)
         {
             Response.Redirect("clear.aspx");
+        }
+
+        protected void changeTagCountButton_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("changeTagCount.aspx");
+        }
+
+        protected void TicketsGridView_PageIndexChanged(object sender, EventArgs e)
+        {
+            if (this.modifyButton.Text == "修改名单")
+            {
+                this.TicketsGridView.Columns[0].Visible = false;
+            }
+            else
+            {
+                this.TicketsGridView.Columns[0].Visible = true;
+            }
         }
     }
 }

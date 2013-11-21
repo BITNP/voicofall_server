@@ -77,15 +77,25 @@
     <Content Include="decreaseTickets.aspx" />
     <Content Include="default.aspx" />
     <Content Include="html_book.html" />
-    <Content Include="images\ticket_waiting.png" />
+    <Content Include="images\android1.png" />
+    <Content Include="images\android2.png" />
+    <Content Include="images\html1.png" />
+    <Content Include="images\html2.png" />
+    <Content Include="images\shenqiu.jpg" />
+    <Content Include="images\选手.jpg" />
+    <Content Include="js\jquery.js" />
+    <Content Include="js\unslider.js" />
     <Content Include="login.aspx" />
     <Content Include="manageAdmin.aspx" />
     <Content Include="ResponsePages\MyTicket.aspx" />
+    <Content Include="select.html" />
+    <Content Include="test.html" />
     <Content Include="unloginpage.aspx" />
     <Content Include="Web.config" />
-    <Content Include="wrongcode.txt" />
+    <Content Include="tag.txt" />
     <Content Include="changeZone.aspx" />
     <Content Include="changeshenqiuName.aspx" />
+    <Content Include="changeTagCount.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="addtickets.aspx.cs">
@@ -185,6 +195,9 @@
     <Compile Include="ResponsePages\reto_ticket.ashx.cs">
       <DependentUpon>reto_ticket.ashx</DependentUpon>
     </Compile>
+    <Compile Include="ResponsePages\reto_ticketsTable.ashx.cs">
+      <DependentUpon>reto_ticketsTable.ashx</DependentUpon>
+    </Compile>
     <Compile Include="unloginpage.aspx.cs">
       <DependentUpon>unloginpage.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -206,6 +219,13 @@
     <Compile Include="changeshenqiuName.aspx.designer.cs">
       <DependentUpon>changeshenqiuName.aspx</DependentUpon>
     </Compile>
+    <Compile Include="changeTagCount.aspx.cs">
+      <DependentUpon>changeTagCount.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="changeTagCount.aspx.designer.cs">
+      <DependentUpon>changeTagCount.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ResponsePages\reto_book.ashx" />
@@ -214,6 +234,7 @@
     <Content Include="ResponsePages\ResponseTicketsInfo.ashx" />
     <Content Include="ResponsePages\reto_rebook.ashx" />
     <Content Include="ResponsePages\reto_ticket.ashx" />
+    <Content Include="ResponsePages\reto_ticketsTable.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

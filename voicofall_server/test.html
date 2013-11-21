@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+<script type="text/javascript">
+    var xmlhttp = new XMLHttpRequest(); //AJAX的对象
+
+    //订票按钮
+    function q() {
+        var url = "http://ticket.bothcloud.com/ResponsePages/reto_ticketsTable.ashx";
+
+        xmlhttp.open("get", encodeURI(url), true);       //使用get，设置是否异步操作为true
+        xmlhttp.send(null);                             //向服务器传递
+        xmlhttp.onreadystatechange = bookProc;          //状态若改变，则调用bookProc函数
+    }
+
+    //状态改变时调用
+    function bookProc() {
+        //状态为4（交易成功，即请求成功，返回数据成功）运行
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            rpsstring = xmlhttp.response;   //将返回的数据保存在rpsstring中
+            document.getElementById("msg").innerHTML = rpsstring;
+        }
+    }
+
+</script>
+</head>
+<body>
+    <div>
+         <input id="Button1" type="button" value="button" onclick="q()" />
+    </div>
+   <p id="msg">
+
+   </p>
+</body>
+</html>

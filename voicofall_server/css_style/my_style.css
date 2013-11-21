@@ -22,12 +22,20 @@
     padding-right: 20px;
 }
 
+.right40 {
+    padding-right: 40px;
+}
+
 .mbottom20 {
     margin-bottom: 20px;
 }
 
 .mtop10 {
     margin-top: 10px;
+}
+
+.mtopbig {
+    margin-top: 40px;
 }
 
 .btnbox {
@@ -78,4 +86,12 @@ vertical-align:middle;
 
 .greenBorder {
     border: 5px solid #2ecc71;
+}
+
+.banner { position: relative; overflow: auto; }
+    .banner li { list-style: none; }
+        .banner ul li { float: left; }
+
+.boarder {
+    border: 2px solid #2ecc71;
 }

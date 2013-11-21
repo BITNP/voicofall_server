@@ -4,20 +4,31 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>深秋歌会：在线订票</title>
 
+<link href="css_style/bootstrap.css" rel="Stylesheet" />
+<link href="css_style/flat-ui.css" rel="Stylesheet" />
+<link href="css_style/my_style.css" rel="Stylesheet" />
+
 <script type="text/javascript">
     var xmlhttp = new XMLHttpRequest(); //AJAX的对象
     var rpsstring;//responseString，请求服务器返回的字符串
-    var uid;
-    var serverurl = "";//"http://10.193.35.162/";
+    var uid = 0;
+    var serverurl = ""//"http://ticket.bothcloud.com/";
+    var unbooked;
+    var shenqiuName;
+    var shenqiuStartTime;
+    var zone;
 
     //订票按钮
     function submit_onlick()
     {
+        valid = validInfo();
+        if (!valid)
+            return;
         var url =   //请求服务器页面的url
             serverurl+"ResponsePages/reto_book.ashx?" + 
-            "username=" + $("username").value + "&" +   //姓名
-            "studentid=" + $("studentid").value + "&" + //学号
-            "phonenumber=" + $("phonenumber").value;    //电话
+            "username=" + id("username").value + "&" +   //姓名
+            "studentid=" + id("studentid").value + "&" + //学号
+            "phonenumber=" + id("phonenumber").value;    //电话
         
         xmlhttp.open("get",encodeURI(url), true);       //使用get，设置是否异步操作为true
         xmlhttp.send(null);                             //向服务器传递
@@ -42,12 +53,8 @@
         {
             var re = new RegExp(/\d{12}/);
             uid = rpsstring.match(re);
-            $("response").innerHTML += "预订成功!</br>";
-            $("response").innerHTML += "您的信息为</br>";
-            $("response").innerHTML += "门票ID:" + uid + "</br>";
-            $("response").innerHTML += "姓名:" + $("username").value + "</br>";
-            $("response").innerHTML += "学号:" + $("studentid").value + "</br>";
-            $("response").innerHTML += "手机号" + $("phonenumber").value;
+            window.alert("订票成功！\n点击确定查看您的门票二维码\n如果页面没有跳转，请点击查看门票按钮");
+            self.location.href = "ResponsePages/MyTicket.aspx?uid="+uid;
         }
         else    //传递过来的是state=no&wrongcode=*，*为数字
         {
@@ -55,24 +62,27 @@
             uid = rpsstring.match(re);   //匹配rpsstring
             //判断wrongcode的值，在<p id="response"></p>中输出信息
             if (uid == "1")
-                $("response").innerHTML = "请勿重复订票！";
+                id("messageBox").innerHTML = "请勿重复订票！";
             else if (uid == "2")
-                $("response").innerHTML = "预订失败！请重试！";
+                id("messageBox").innerHTML = "预订失败！请重试！";
             else if (uid == "3")
-                $("response").innerHTML = "链接数据库出错！";
+                id("messageBox").innerHTML = "链接数据库出错！";
             else if (uid == "4")
-                $("response").innerHTML = "预订失败。</br>票已订完！您的手速不给力啊……";
+                id("messageBox").innerHTML = "票已经被抢完了，下次再快一些~";
 
         }
     }
 
     function query_onlick()
     {
+        valid = validInfo();
+        if (!valid)
+            return;
         var url = serverurl +  //请求服务器页面的url
            "ResponsePages/reto_query.ashx?" +
-           "username=" + $("username").value + "&" +   //姓名
-           "studentid=" + $("studentid").value + "&" + //学号
-           "phonenumber=" + $("phonenumber").value;    //电话
+           "username=" + id("username").value + "&" +   //姓名
+           "studentid=" + id("studentid").value + "&" + //学号
+           "phonenumber=" + id("phonenumber").value;    //电话
 
         xmlhttp.open("get", encodeURI(url), true);       //使用get，设置是否异步操作为true
         xmlhttp.send(null);                             //向服务器传递
@@ -87,12 +97,12 @@
         {
             rpsstring = xmlhttp.response;   //将返回的数据保存在rpsstring中
             var reg = new RegExp(/\d{12}/);
-            if (rpsstring.match(reg) == "0")
-                $("response").innerHTML = "没有您的订票记录！</br>请检查信息是否输入有误。";
+            if (!reg.test(rpsstring))
+                id("messageBox").innerHTML = "没有您的订票记录！</br>请检查信息是否输入有误。";
             else
             {
-                $("response").innerHTML = "您的门票ID为 : " + rpsstring.match(reg);
                 uid = rpsstring.match(reg);
+                id("messageBox").innerHTML = "查询到您的订票信息！</br>您的门票ID为"+uid+"</br>点击查看门票查看门票二维码";   
             }
         }
     }
@@ -100,6 +110,15 @@
     //退票
     function rebook_onlick()
     {
+        valid = validInfo();
+        if (!valid)
+            return;
+        if (uid == 0) {
+            id("messageBox").innerHTML = "请先点击查询按钮查询订票信息";
+            return;
+        }
+        if (!window.confirm("确定要退票吗？"))
+            return;
         var url = serverurl + //请求服务器页面的url
           "ResponsePages/reto_rebook.ashx?" +
           "uid=" + uid;
@@ -114,12 +133,20 @@
         if (xmlhttp.readyState == 4) {
             rpsstring = xmlhttp.response;   //将返回的数据保存在rpsstring中
             if (rpsstring == "1")
-                $("response").innerHTML = "退订成功";
+            {
+                window.alert("退订成功！");
+                id("messageBox").innerHTML = "";
+                uid = 0;
+            }
+            else if (rpsstring == '0')
+            {
+                id("messageBox").innerHTML = "未查询到您的订票信息";
+            }
         }
     }
 
     //&(id)效果等同于document.getElementById(id)
-    function $(id)
+    function id(id)
     {
         var elements = new Array();   
         for (var i = 0; i < arguments.length; i++)   
@@ -185,8 +212,19 @@
     }
 
     function ticketProc() {
-        if (xmlhttp.readyState == 4) {
-            $("unbooked").innerHTML = "剩余票数:" + xmlhttp.response;
+        if (xmlhttp.readyState == 4)
+        {
+            rpsstring = xmlhttp.response;
+            var arr = rpsstring.split("&"); //将字符串rpsstring用split方法以&符号分开成一个数组
+            //从这个数组读取时间
+            unbooked = Number(arr[0]);
+            shenqiuStartTime = arr[1];
+            shenqiuName = arr[2];
+            zone = arr[3];
+            id("unbooked").innerHTML = unbooked;
+            id("shenqiuName").innerHTML = shenqiuName;
+            id("shenqiuStartTime").innerHTML = shenqiuStartTime;
+            id("zone").innerHTML = zone;
         }
     }
 
@@ -196,7 +234,7 @@
         var reg = new RegExp(/state=no&wrongcode=3/);   //创建正则表达式，判断是否等于state=no&wrongcode=3
         if (reg.test(rpsstring))    //是的话则输出错误信息
         {
-            $("response").innerHTML = "链接数据库出错！";
+            id("messageBox").innerHTML = "链接数据库出错！";
             bookhour = 100; //并且将预订时间设为100防止提交按钮生效
             return;
         }
@@ -215,7 +253,7 @@
         bookmin = Number(arr[10]);
         booksecond = Number(arr[11]);
         //将时间显示在<span id="bookTime"></span>中
-        $("bookTime").innerHTML = bookyear + "年" + bookmonth + "月" + bookday + "日 " + (bookhour < 10 ? "0" : "") + bookhour + ":" + (bookmin < 10 ? "0" : "") + bookmin;
+        id("bookTime").innerHTML = bookyear + "年" + bookmonth + "月" + bookday + "日 " + bookhour + ":" + (bookmin < 10 ? "0" : "") + bookmin;
     }
 
     var bookAllow = false;  //是否允许提交
@@ -234,6 +272,7 @@
                 hour++;
                 if (hour >= 24)
                 {
+                    day++;
                     hour = 0;
                 }
             }
@@ -244,10 +283,10 @@
             if (CompareToBookTime())    //用自定义函数CompareToBookTime()函数，比较当前时间和预订时间，如果没到则返回false,否则为true
             {
                 bookAllow = true;
-                $("bookButton").disabled = "";  //如果时间到了则允许使用按钮
+                id("bookButton").disabled = "";  //如果时间到了则允许使用按钮
             }
         }
-        $("servertime").innerHTML = "当前时间: " + year + "年" + month + "月" + day + "日 " + (hour < 10 ? "0" : "") + hour + ":" + (min < 10 ? "0" : "") + min + ":" + (second < 10 ? "0" : "") + second;
+        id("servertime").innerHTML = + year + "年" + month + "月" + day + "日 " + hour + ":" + (min < 10 ? "0" : "") + min + ":" + "<strong>"+ (second < 10 ? "0" : "") + second +"<strong>";
         window.setTimeout("UpdateTime()", 1000);
     }
 
@@ -267,10 +306,41 @@
             return false;
     }
 
+    function validInfo()
+    {
+        var wrongMessage = true;
+       
+        if (id("username").value == "") {
+            id("messageBox").innerHTML = "请填写姓名";
+            return false;
+        }
+        var reg = new RegExp(/^\d{10}$/);
+        var string = id("studentid").value;
+        if (!reg.test(string)) {
+            id("messageBox").innerHTML = "请填写10位有效学号";
+            wrongMessage = "请填写有效学号";
+            return false;
+        }
+        reg = new RegExp(/^1\d{10}$/);
+        string = id("phonenumber").value;
+        if (!reg.test(string)) {
+            id("messageBox").innerHTML = "请填写11位有效手机号";
+            wrongMessage = "请正确填写手机";
+            return false;
+        }
+        return true;
+    }
+
     function myticket_onlick()
     {
-        var re = new RegExp(/\d{12}/);
-        var uids = "";
+        valid = validInfo();
+        if (!valid)
+            return;
+        var reg = new RegExp(/\d{12}/);
+        if (!reg.test(uid)) {
+            id("messageBox").innerHTML = "请先查询您的订票信息！";
+            return;
+        }
         //if (uid != null)
         window.location.href = serverurl + "ResponsePages/MyTicket.aspx?uid=" + uid;
             //self.location(serverurl + "ResponsePages/MyTicket.aspx?uid=" + uid);
@@ -282,33 +352,68 @@
         //GetTicketsInfoFromServer();
     }
 
+   
 </script>
 </head>
-<body onload="onLoad()">
-    <div>
-        <div>
-            <span>订票时间:</span>
-            <span id="bookTime">
-            </span>
+<body onload="onLoad()" style="background-color:#f4f3e2">
+    <div class="container mtopbig" style="text-align:center;background-color:#f3f1d1">
+        <div style="text-align:center">
+            <h3>深秋歌会：在线订票</h3>
         </div>
-        <div id="servertime">
+        <div >
+             <div>
+                <span class="right20" style="color:#27AE60">
+                    <span></span>
+                    <span id="shenqiuName"></span>
+                </span>
+                <span style="color:#2ECC71">
+                    <span>时间:</span>
+                    <span id="shenqiuStartTime"></span>
+                </span>
+            </div>
+
+            <div>
+                <span class="right20 purple">
+                    <span>订票时间:</span>
+                    <span id="bookTime"></span>
+                </span>
+                <span class="blue" >
+                    <span>当前时间:</span>
+                    <span id="servertime"></span>
+                </span>
+            </div>
+            
+            <div>
+                <span class="right20" >
+                    <span></span>
+                    <span id="zone" class="blue bold"  style="font-size:large"></span>
+                </span>
+                <span>
+                    <span id="unbooked" class="blue bold"  style="font-size:large"></span>
+                    <span style="font-size:small">张剩余</span>
+                </span>
+            </div>
+            <div>
+                <span class="right20" >
+                    <span></span>
+                    <span class="red" id="messageBox"></span>
+                </span>
+            </div>
         </div>
-        <div id="unbooked">
+        <div class="top10">
+            <span class="right20">姓名</span><input class="tbgreen" id="username" type="text" name="username" />
         </div>
-        <div>
-            <span>姓名</span><input id="username" type="text" name="username" />
+        <div class="top10">
+            <span class="right20">学号</span><input class="tbgreen" id="studentid" type="text" name="studentid" />
         </div>
-        <div>
-            <span>学号</span><input id="studentid" type="text" name="studentid" />
+        <div class="top10">
+            <span class="right20">手机</span><input class="tbgreen" id="phonenumber" type="text" name="phonenumber" />
         </div>
-        <div>
-            <span>手机</span><input id="phonenumber" type="text" name="phonenumber" />
-        </div>
-        <div>
-            <span><button id="bookButton" disabled="disabled" onclick="submit_onlick()">预订</button></span>
-            <span><button id="queryButton" onclick="query_onlick()">查询</button></span>
-            <span><button id="rebookButton" onclick="rebook_onlick()">退票</button></span>
-            <span><button id="myticketButton" onclick="myticket_onlick()">我的门票</button></span>
+        <div class="top20 mbottom20">
+            <span><button class="btn btn-large btn-info btnbox" id="bookButton" disabled="disabled" onclick="submit_onlick()">预订</button></span>
+            <span><button class="btn btn-large btn-info btnbox" id="queryButton" onclick="query_onlick()">查询</button></span>
+            <span><button class="btn btn-large btn-danger btnbox" id="rebookButton" onclick="rebook_onlick()">退票</button></span>
+            <span><button class="btn btn-large btn-primary btnbox" id="myticketButton" onclick="myticket_onlick()">查看门票</button></span>
         </div>
         <div>
             <p id="response">

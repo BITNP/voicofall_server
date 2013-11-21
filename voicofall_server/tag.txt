@@ -1,0 +1,56 @@
+﻿1 = 重复订票
+2 = 预定失败，刷新数据库错误，请重试
+3 = 初始化数据库出错
+4 = 票已订完
+5 = 未到订票时间
+
+
+reto_book.ashx
+request		:	username=魏睿&studentid=1120121957&phonenumber=18001356302
+response	:	(succeed)	state=yes&uid=123456789012&zonename=普通票&tag=A 
+				(existed)   state=no&wrongcode=1
+				
+
+reto_query.ashx
+request		:	username=魏睿&studentid=1120121957&phonenumber=18001356302
+response	:	(yes)		state=yes&uid=123456789012&zonename=普通票&shenqiuStartTime=&shenqiuName=&tag=A 
+				(none)		uid=0
+				(error)		error
+
+reto_rebook.ashx
+request		:	uid=123456789012
+response	:	(yes)		1
+				(none)		0
+				(error)		2
+
+ResponseTicketsInfo.ashx
+request		:	
+response	:	(yes)		[unbooked]&[shenqiuStartTime]&[shenqiuName]&[zone]
+				(error)		state=no&wrongcode=3
+
+ResponseSeverTime.ashx
+request		:	
+response	:	(yes)		year		//0
+                            month		//1
+                            day			//2
+                            hour		//3
+                            min			//4
+                            second      //5
+                            bookyear    //6
+                            bookmonth   //7
+                            bookday     //8
+                            bookhour    //9
+                            bookmin     //10
+							booksecond	//11
+				(noHaveParty) noparty
+
+MyTicket.aspx
+request		:	[uid]
+response	:	html
+
+
+reto_ticket.ashx
+request		:	[uid]
+response	:	(codeImage) codewith :	[uid]&[username]&[studentid]&[phonenumber]&[zonename]&[shenqiutime]&[shenqiuName]&[tag]
+
+validator	:	

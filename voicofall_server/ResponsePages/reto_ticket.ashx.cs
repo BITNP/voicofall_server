@@ -38,8 +38,11 @@ namespace voicofall_server.ResponsePages
         string zonename;
         string shenqiuName;
         string shenqiutime;
+        string tag;
 
         string codeString;
+
+
 
         static int width = 512;
         static int height = 512;
@@ -54,7 +57,7 @@ namespace voicofall_server.ResponsePages
             this.uid = context.Request.Params["uid"];
 
             LoadTicketInfo(uid, context);
-            codeString = String.Format("{0}&{1}&{2}&{3}&{4}&{5}&{6}",uid,username,studentid,phonenumber,zonename,shenqiutime,shenqiuName);
+            codeString = String.Format("{0}&{1}&{2}&{3}&{4}&{5}&{6}&{7}",uid,username,studentid,phonenumber,zonename,shenqiutime,shenqiuName,tag);
             IDictionary<EncodeHintType, object> hints = new Dictionary<EncodeHintType,object>();
             hints.Add(EncodeHintType.CHARACTER_SET,"UTF-8");
             MemoryStream ms = new MemoryStream();
@@ -80,19 +83,25 @@ namespace voicofall_server.ResponsePages
             }
             gs = Graphics.FromImage(bmap);
             SizeF shenqiuNameSize = gs.MeasureString(shenqiuName, new Font("隶书", 24));
-            SizeF zoneSize = gs.MeasureString(zonename, new Font("隶书", 24));
+            //char c = (char)('A' + tag - 1);
+            zonename += "(" + tag +")";
+            SizeF zoneSize = gs.MeasureString(zonename, new Font("隶书", 16));
             SizeF uidSize = gs.MeasureString(uid, new Font("隶书", 16));
+            SizeF usernameSize = gs.MeasureString(username, new Font("隶书", 12));
+            SizeF phonenumberSize = gs.MeasureString(phonenumber, new Font("隶书", 12));
             DrawText(bmap, "深秋歌会", 45, 10, 32);
             DrawText(bmap, shenqiuName, codeWidth - (int)shenqiuNameSize.Width, 18, 24);
             DrawText(bmap, "ID:"+uid, 45, codeHeight + (int)uidSize.Height + 22, 16);
-            DrawText(bmap, zonename, codeWidth - (int)zoneSize.Width, codeHeight + (int)zoneSize.Height, 24);
+            DrawText(bmap, "["+username+"]", 45 + (int)uidSize.Width + 45, codeHeight + (int)uidSize.Height + 25, 12);
+            //DrawText(bmap, phonenumber, 45 + (int)uidSize.Width + (int)usernameSize.Width + 45, codeHeight + (int)uidSize.Height + 25, 12);
+            DrawText(bmap, zonename, codeWidth - (int)zoneSize.Width, codeHeight + (int)zoneSize.Height + 22, 16);
             return bmap;
         }
 
         private void DrawText(Bitmap img,string s, int x, int y, int fontsize)
         {
             gs = Graphics.FromImage(img);
-            Font font = new Font("隶书", fontsize);
+            Font font = new Font("楷体", fontsize);
             Brush br = new SolidBrush(Color.Black);
             gs.DrawString(s, font, br, x, y);
             gs.Dispose();
@@ -131,8 +140,10 @@ namespace voicofall_server.ResponsePages
                 studentid = ticketRow["studentid"] as string;
                 phonenumber = ticketRow["phonenumber"] as string;
                 zonename = ticketRow["zonename"] as string;
+                tag = ticketRow["tickettag"] as string;
                 shenqiutime = (ticketsStateTable.Rows.Find("shenqiuStartTime"))["scontent"] as string;
                 shenqiuName = (ticketsStateTable.Rows.Find("shenqiuName"))["scontent"] as string;
+                
             }
             catch (Exception ee)
             {

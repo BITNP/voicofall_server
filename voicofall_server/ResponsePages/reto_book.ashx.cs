@@ -5,6 +5,8 @@ using System.Web;
 using System.Data;
 using System.Data.OleDb;
 
+//finish
+
 namespace voicofall_server.ResponsePages
 {
     /// <summary>
@@ -20,6 +22,7 @@ namespace voicofall_server.ResponsePages
         OleDbDataAdapter Adapter2;
         DataSet dataSet2;
         string strSQL;
+        Random rd = new Random();
 
         public void ProcessRequest(HttpContext context)
         {
@@ -31,10 +34,9 @@ namespace voicofall_server.ResponsePages
             string studentid = context.Request.Params["studentid"];
             string phonenumber = context.Request.Params["phonenumber"];
             string ticketid;
-            string shenqiuStartTime;
-            string shenqiuName;
             string zonename;
             int unbooked;
+            string ticketTag;
             string temp = ((DateTime.Now.Year % 100) < 10 ? "0" : "") + (DateTime.Now.Year % 100).ToString() + studentid.Substring(6) + phonenumber.Substring(9);
             int rdnum = rd.Next(100);
             temp += (rdnum < 10 ? "0" : "") + rdnum.ToString();
@@ -72,11 +74,11 @@ namespace voicofall_server.ResponsePages
                 return;
             }
 
-            //检验studentid是否存在
+            //检验phonenumber是否存在
             for (int i = 0; i < ticketsTable.Rows.Count; i++)
             {
                 DataRow row = ticketsTable.Rows[i];
-                if ((string)(row["studentid"]) == studentid)
+                if ((string)(row["phonenumber"]) == phonenumber)
                 {
                     context.Response.Write("state=no&wrongcode=1"); //"请勿重复订票！
                     return;
@@ -88,14 +90,14 @@ namespace voicofall_server.ResponsePages
             DataRow newRow = ticketsTable.NewRow();
             newRow["UID"] = ticketid;
             newRow["zonename"] = (ticketsStateTable.Rows.Find("nextBookzone"))["scontent"] as string;
+            newRow["tickettag"] = (char)('A' + rd.Next((int)(ticketsStateTable.Rows.Find("tagCount"))["content"]));
+            ticketTag = (string)newRow["tickettag"];
             zonename = newRow["zonename"] as string;
             newRow["username"] = username;
             newRow["studentid"] = studentid;
             newRow["phonenumber"] = phonenumber;
             newRow["addtime"] = time;
             ticketsTable.Rows.Add(newRow);
-            shenqiuName = (ticketsStateTable.Rows.Find("shenqiuName"))["scontent"] as string;
-            shenqiuStartTime = (ticketsStateTable.Rows.Find("shenqiuStartTime"))["scontent"] as string;
             unbooked = (int)(ticketsStateTable.Rows.Find("unbooked"))["content"];
             //修改剩余票数
             DataRow rowbooed = ticketsStateTable.Rows.Find("booked");
@@ -115,9 +117,9 @@ namespace voicofall_server.ResponsePages
                 context.Response.Write("state=no&wrongcode=2");  //预订失败！请重试！
                 return;
             }
-            
 
-            context.Response.Write(String.Format("state=yes&uid={0}&zonename={1}&shenqiuName={2}",ticketid,zonename,shenqiuName));
+
+            context.Response.Write(String.Format("state=yes&uid={0}&zonename={1}&tag={2}", ticketid, zonename, ticketTag));
         }
 
         public void InitDB(HttpContext context)

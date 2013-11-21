@@ -17,7 +17,7 @@
             <h3>我的门票</h3>
         </div >
         <div  id="wrongmessage" runat="server" class="purple"  style="text-align:center">
-            <asp:Label ID="msgBox" runat="server" Text=""></asp:Label>
+            <asp:Label ID="msgBox" runat="server" Text="请将二维码图片保存在手机上以验票使用</br>请尽量避免用手机直接拍摄，以免造成二维码不清晰，验票时延误进场"></asp:Label>
         </div>
         <div style="text-align:center;">
             <%--<div style="width:512px;height:512px;">--%>

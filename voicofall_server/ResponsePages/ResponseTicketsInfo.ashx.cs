@@ -21,12 +21,14 @@ namespace voicofall_server.ResponsePages
 
         private int unbooked;
         private string shenqiustarttime;
+        private string shenqiuName;
+        private string zone;
 
         public void ProcessRequest(HttpContext context)
         {
             context.Response.ContentType = "text/plain";
             GetTicketsInfoFromDB(context);
-            context.Response.Write(unbooked.ToString() +"&"+shenqiustarttime);
+            context.Response.Write(unbooked.ToString() +"&"+shenqiustarttime + "&" + shenqiuName + "&" + zone);
         }
 
         public bool IsReusable
@@ -58,6 +60,10 @@ namespace voicofall_server.ResponsePages
                 unbooked = (int)tempRow["content"];
                 tempRow = ticketsStateTable.Rows.Find("shenqiuStartTime");
                 shenqiustarttime = tempRow["scontent"] as string;
+                tempRow = ticketsStateTable.Rows.Find("shenqiuName");
+                shenqiuName = tempRow["scontent"] as string;
+                tempRow = ticketsStateTable.Rows.Find("nextBookZone");
+                zone = tempRow["scontent"] as string;
                 conn.Close();
             }
             catch (Exception ee)

@@ -25,6 +25,7 @@ namespace voicofall_server.ResponsePages
         int bookhour;     //arr[9]
         int bookmin;      //arr[10]
         int booksecond;   //arr[11]
+        string party;
 
         public void ProcessRequest(HttpContext context)
         {
@@ -37,6 +38,12 @@ namespace voicofall_server.ResponsePages
             int second = DateTime.Now.Second;
 
             GetBookTimeFromDB(context);
+
+            if (party == "no")
+            {
+                context.Response.Write("noparty");
+                return;
+            }
 
             context.Response.Write(year.ToString() + "&" +
                                    month.ToString() + "&" +
@@ -92,6 +99,7 @@ namespace voicofall_server.ResponsePages
                 bookmin = Convert.ToInt32(reg.Match(temp).Value);
                 booksecond = 0;
 
+                party = ticketsStateTable.Rows.Find("party")["scontent"] as string;
                 
                 conn.Close();
             }

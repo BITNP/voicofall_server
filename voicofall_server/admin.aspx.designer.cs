@@ -130,6 +130,15 @@ namespace voicofall_server {
         protected global::System.Web.UI.WebControls.Button changeshenqiuName;
         
         /// <summary>
+        /// changeTagCountButton 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button changeTagCountButton;
+        
+        /// <summary>
         /// clearButton 控件。
         /// </summary>
         /// <remarks>
@@ -164,6 +173,15 @@ namespace voicofall_server {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label shenqiuStartTimeLabel;
+        
+        /// <summary>
+        /// tagCountLabel 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label tagCountLabel;
         
         /// <summary>
         /// zoneLabel 控件。
@@ -236,5 +254,14 @@ namespace voicofall_server {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView TicketsGridView;
+        
+        /// <summary>
+        /// AccessDataSource2 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.AccessDataSource AccessDataSource2;
     }
 }

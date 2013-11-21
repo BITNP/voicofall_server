@@ -42,12 +42,13 @@ namespace voicofall_server.ResponsePages
                     }
                     catch (Exception ee)
                     {
-                        context.Response.Write("0");
+                        context.Response.Write("2");
                     }
                     
                     return;
                 }
             }
+            context.Response.Write("0");
         }
 
         public bool IsReusable
